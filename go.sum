@@ -1,5 +1,5 @@
-github.com/at-wat/srtp v1.2.7-0.20190724091631-94000be827fb h1:Hkt724NJ0nqsltGdfyZmKyNgWAr68T9GmAeJIsevNaU=
-github.com/at-wat/srtp v1.2.7-0.20190724091631-94000be827fb/go.mod h1:7vsvFlKuZoKrJ381gpWU7Dl21MG7suLCaD6rk8D7SCo=
+github.com/at-wat/srtp v1.2.7-0.20190724113118-a8b1eb00d6fc h1:KWRlJW86wqJ+/ZRG8OGrSSjdqzC/wTtvKZzaOmUYfhY=
+github.com/at-wat/srtp v1.2.7-0.20190724113118-a8b1eb00d6fc/go.mod h1:7vsvFlKuZoKrJ381gpWU7Dl21MG7suLCaD6rk8D7SCo=
 github.com/cheekybits/genny v1.0.0 h1:uGGa4nei+j20rOSeDeP5Of12XVm7TGUd4dJA9RDitfE=
 github.com/cheekybits/genny v1.0.0/go.mod h1:+tQajlRqAUrPI7DOSpB0XAqZYtQakVtB7wXkRAgjxjQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
