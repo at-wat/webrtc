@@ -13,8 +13,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/at-wat/srtp"
 	"github.com/pion/dtls"
-	"github.com/pion/srtp"
 	"github.com/pion/webrtc/v2/internal/mux"
 	"github.com/pion/webrtc/v2/internal/util"
 	"github.com/pion/webrtc/v2/pkg/rtcerr"

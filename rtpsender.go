@@ -6,9 +6,9 @@ import (
 	"fmt"
 	"sync"
 
+	"github.com/at-wat/srtp"
 	"github.com/pion/rtcp"
 	"github.com/pion/rtp"
-	"github.com/pion/srtp"
 )
 
 // RTPSender allows an application to control how a given Track is encoded and transmitted to a remote peer
