@@ -7,9 +7,9 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/at-wat/webrtc/v2/internal/mux"
 	"github.com/pion/ice"
 	"github.com/pion/logging"
-	"github.com/pion/webrtc/v2/internal/mux"
 )
 
 // ICETransport allows an application access to information about the ICE

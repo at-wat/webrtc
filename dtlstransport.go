@@ -14,10 +14,10 @@ import (
 	"time"
 
 	"github.com/at-wat/srtp"
+	"github.com/at-wat/webrtc/v2/pkg/rtcerr"
+	"github.com/pion/at-wat/v2/internal/mux"
+	"github.com/pion/at-wat/v2/internal/util"
 	"github.com/pion/dtls"
-	"github.com/pion/webrtc/v2/internal/mux"
-	"github.com/pion/webrtc/v2/internal/util"
-	"github.com/pion/webrtc/v2/pkg/rtcerr"
 )
 
 // DTLSTransport allows an application access to information about the DTLS

@@ -7,10 +7,10 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/at-wat/webrtc/v2"
 	"github.com/pion/quic"
-	"github.com/pion/webrtc/v2"
 
-	"github.com/pion/webrtc/v2/examples/internal/signal"
+	"github.com/at-wat/webrtc/v2/examples/internal/signal"
 )
 
 const messageSize = 15

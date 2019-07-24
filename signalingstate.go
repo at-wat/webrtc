@@ -3,7 +3,7 @@ package webrtc
 import (
 	"fmt"
 
-	"github.com/pion/webrtc/v2/pkg/rtcerr"
+	"github.com/at-wat/webrtc/v2/pkg/rtcerr"
 )
 
 type stateChangeOp int
