@@ -519,6 +519,8 @@ func (pc *PeerConnection) createICETransport() *ICETransport {
 			cs = ICEConnectionStateDisconnected
 		case ICETransportStateClosed:
 			cs = ICEConnectionStateClosed
+			// Unregister callback to break circular reference
+			t.OnConnectionStateChange(nil)
 		default:
 			pc.log.Warnf("OnConnectionStateChange: unhandled ICE state: %s", state)
 			return
@@ -1568,6 +1570,11 @@ func (pc *PeerConnection) Close() error {
 			closeErrs = append(closeErrs, err)
 		}
 	}
+
+	// A func registered to pc.sctpTransport.OnDataChannel have reference to pc.
+	// Clear them to break circular reference.
+	pc.sctpTransport = nil
+
 	return util.FlattenErrs(closeErrs)
 }
 

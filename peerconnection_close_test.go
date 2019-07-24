@@ -3,6 +3,7 @@
 package webrtc
 
 import (
+	"runtime"
 	"testing"
 	"time"
 
@@ -73,6 +74,7 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 	lim := test.TimeOut(time.Second * 30)
 	defer lim.Stop()
 
+	runtime.GC()
 	report := test.CheckRoutines(t)
 	defer report()
 
@@ -80,6 +82,16 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+
+	finalized := false
+	runtime.SetFinalizer(pcAnswer, func(*PeerConnection) {
+		finalized = true
+	})
+	defer func() {
+		if !finalized {
+			t.Error("PeerConnection is leaked.")
+		}
+	}()
 
 	answer, err := pcOffer.CreateOffer(nil)
 	if err != nil {
@@ -111,9 +123,11 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 	for {
 		if pcAnswer.iceTransport.State() == ICETransportStateClosed {
 			time.Sleep(time.Second * 3)
-			return
+			break
 		}
 
 		time.Sleep(time.Second)
 	}
+	time.Sleep(time.Second)
+	runtime.GC()
 }
