@@ -183,6 +183,9 @@ func (g *ICEGatherer) Close() error {
 		return nil
 	}
 
+	// Break circular reference g->g.agent->g due to OnCandidate callback.
+	g.agent.OnCandidate(nil)
+
 	err := g.agent.Close()
 	if err != nil {
 		return err
