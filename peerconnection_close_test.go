@@ -88,6 +88,7 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 		finalized = true
 	})
 	defer func() {
+		runtime.GC()
 		if !finalized {
 			t.Error("PeerConnection is leaked.")
 		}
@@ -129,5 +130,4 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 		time.Sleep(time.Second)
 	}
 	time.Sleep(time.Second)
-	runtime.GC()
 }

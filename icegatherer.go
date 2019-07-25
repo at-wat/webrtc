@@ -198,6 +198,9 @@ func (g *ICEGatherer) Close() error {
 	}
 	g.agent = nil
 
+	//g.loggerFactory = nil
+	//g.log = nil
+
 	return nil
 }
 

@@ -1,6 +1,8 @@
 package mux
 
 import (
+	"errors"
+	"log"
 	"net"
 	"sync"
 
@@ -73,26 +75,39 @@ func (m *Mux) RemoveEndpoint(e *Endpoint) {
 
 // Close closes the Mux and all associated Endpoints.
 func (m *Mux) Close() error {
+	log.Printf("<<< mux start closing")
+	var errs []error
 	m.lock.Lock()
 	for e := range m.endpoints {
-		err := e.close()
-		if err != nil {
-			return err
+		if err := e.close(); err != nil {
+			errs = append(errs, err)
 		}
 
 		delete(m.endpoints, e)
 	}
 	m.lock.Unlock()
 
-	err := m.nextConn.Close()
-	if err != nil {
-		return err
+	log.Printf("<<< mux conn closing")
+
+	if err := m.nextConn.Close(); err != nil {
+		errs = append(errs, err)
+	} else {
+		// Wait for readLoop to end
+		<-m.closedCh
 	}
 
-	// Wait for readLoop to end
-	<-m.closedCh
+	log.Printf("<<< mux closing")
 
-	return nil
+	if len(errs) == 0 {
+		return nil
+	}
+	errStr := ""
+	for _, e := range errs {
+		errStr += e.Error()
+	}
+
+	log.Printf("<<< mux closed")
+	return errors.New(errStr)
 }
 
 func (m *Mux) readLoop() {

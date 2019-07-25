@@ -5,6 +5,8 @@ package webrtc
 import (
 	"context"
 	"errors"
+	"log"
+	"runtime"
 	"sync"
 
 	"github.com/at-wat/webrtc/v2/internal/mux"
@@ -128,13 +130,18 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		err = errors.New("unknown ICE Role")
 	}
 
+	log.Printf(">>> icetransport new")
 	// Reacquire the lock to set the connection/mux
 	t.lock.Lock()
 	if err != nil {
+		log.Printf(">>> icetransport new err")
 		return err
 	}
 
 	t.conn = iceConn
+	runtime.SetFinalizer(t.conn, func(interface{}) {
+		log.Printf("----- t.conn finalized")
+	})
 
 	config := mux.Config{
 		Conn:          t.conn,
@@ -142,6 +149,10 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		LoggerFactory: t.loggerFactory,
 	}
 	t.mux = mux.NewMux(config)
+	runtime.SetFinalizer(t.mux, func(interface{}) {
+		log.Printf("----- t.mux finalized")
+	})
+	log.Printf(">>> icetransport.mux")
 
 	return nil
 }
@@ -151,12 +162,32 @@ func (t *ICETransport) Stop() error {
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
+	var errs []error
+	log.Printf("<<< icetransport closing")
 	if t.mux != nil {
-		return t.mux.Close()
-	} else if t.gatherer != nil {
-		return t.gatherer.Close()
+		log.Printf("<<< icetransport.mux closing")
+		if err := t.mux.Close(); err != nil {
+			errs = append(errs, err)
+			t.mux = nil
+		}
+	} else {
+		log.Printf("<<< icetransport.mux is nil")
 	}
-	return nil
+	if t.gatherer != nil {
+		if err := t.gatherer.Close(); err != nil {
+			errs = append(errs, err)
+			t.gatherer = nil
+		}
+	}
+	if len(errs) == 0 {
+		return nil
+	}
+	errStr := ""
+	for _, e := range errs {
+		errStr += e.Error()
+	}
+
+	return errors.New(errStr)
 }
 
 // OnSelectedCandidatePairChange sets a handler that is invoked when a new

@@ -114,13 +114,13 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	if err = pc.initConfiguration(configuration); err != nil {
 		return nil, err
 	}
-
+	log.Printf(">> icegatherer create")
 	pc.iceGatherer, err = pc.createICEGatherer()
 	if err != nil {
 		return nil, err
 	}
 	runtime.SetFinalizer(pc.iceGatherer, func(interface{}) {
-		log.Printf("------- pc.iceGatherer finalized")
+		log.Printf("------- pc.iceGatherer finalized") // currently leaked
 	})
 
 	if !pc.iceGatherer.agentIsTrickle {
@@ -133,7 +133,7 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	iceTransport := pc.createICETransport()
 	pc.iceTransport = iceTransport
 	runtime.SetFinalizer(pc.iceTransport, func(interface{}) {
-		log.Printf("------- pc.iceTransport finalized")
+		log.Printf("------- pc.iceTransport finalized") // currently leaked
 	})
 
 	// Create the DTLS transport
@@ -1585,6 +1585,8 @@ func (pc *PeerConnection) Close() error {
 	// A func registered to pc.sctpTransport.OnDataChannel have reference to pc.
 	// Clear them to break circular reference.
 	pc.sctpTransport = nil
+
+	pc.iceGatherer = nil
 
 	return util.FlattenErrs(closeErrs)
 }
