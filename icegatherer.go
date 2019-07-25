@@ -75,7 +75,7 @@ func NewICEGatherer(
 		candidateTypes = append(candidateTypes, ice.CandidateTypeRelay)
 	}
 
-	g := &ICEGatherer{
+	return &ICEGatherer{
 		state:                     ICEGathererStateNew,
 		validatedServers:          validatedServers,
 		portMin:                   portMin,
@@ -92,11 +92,7 @@ func NewICEGatherer(
 		srflxAcceptanceMinWait:    srflxAcceptanceMinWait,
 		prflxAcceptanceMinWait:    prflxAcceptanceMinWait,
 		relayAcceptanceMinWait:    relayAcceptanceMinWait,
-	}
-	runtime.SetFinalizer(g, func(interface{}) {
-		log.Printf("------- ICEGatherer finalized")
-	})
-	return g, nil
+	}, nil
 }
 
 func (g *ICEGatherer) createAgent() error {

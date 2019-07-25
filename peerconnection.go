@@ -8,8 +8,10 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"fmt"
+	"log"
 	mathRand "math/rand"
 	"regexp"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -117,6 +119,9 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	if err != nil {
 		return nil, err
 	}
+	runtime.SetFinalizer(pc.iceGatherer, func(interface{}) {
+		log.Printf("------- pc.iceGatherer finalized")
+	})
 
 	if !pc.iceGatherer.agentIsTrickle {
 		if err = pc.iceGatherer.Gather(); err != nil {
@@ -127,6 +132,9 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	// Create the ice transport
 	iceTransport := pc.createICETransport()
 	pc.iceTransport = iceTransport
+	runtime.SetFinalizer(pc.iceTransport, func(interface{}) {
+		log.Printf("------- pc.iceTransport finalized")
+	})
 
 	// Create the DTLS transport
 	dtlsTransport, err := pc.api.NewDTLSTransport(pc.iceTransport, pc.configuration.Certificates)
@@ -134,6 +142,9 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 		return nil, err
 	}
 	pc.dtlsTransport = dtlsTransport
+	runtime.SetFinalizer(pc.dtlsTransport, func(interface{}) {
+		log.Printf("------- pc.dtlsTransport finalized")
+	})
 
 	return pc, nil
 }
