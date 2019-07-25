@@ -3,6 +3,8 @@
 package webrtc
 
 import (
+	"log"
+	"runtime"
 	"sync"
 	"time"
 
@@ -73,7 +75,7 @@ func NewICEGatherer(
 		candidateTypes = append(candidateTypes, ice.CandidateTypeRelay)
 	}
 
-	return &ICEGatherer{
+	g := &ICEGatherer{
 		state:                     ICEGathererStateNew,
 		validatedServers:          validatedServers,
 		portMin:                   portMin,
@@ -90,7 +92,11 @@ func NewICEGatherer(
 		srflxAcceptanceMinWait:    srflxAcceptanceMinWait,
 		prflxAcceptanceMinWait:    prflxAcceptanceMinWait,
 		relayAcceptanceMinWait:    relayAcceptanceMinWait,
-	}, nil
+	}
+	runtime.SetFinalizer(g, func(interface{}) {
+		log.Printf("------- ICEGatherer finalized")
+	})
+	return g, nil
 }
 
 func (g *ICEGatherer) createAgent() error {
@@ -130,6 +136,10 @@ func (g *ICEGatherer) createAgent() error {
 	if err != nil {
 		return err
 	}
+
+	runtime.SetFinalizer(agent, func(interface{}) {
+		log.Printf("------- ice.Agent finalized")
+	})
 
 	g.agent = agent
 	if !g.agentIsTrickle {
