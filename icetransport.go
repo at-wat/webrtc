@@ -170,17 +170,20 @@ func (t *ICETransport) Stop() error {
 
 	var errs []error
 	if t.mux != nil {
+		log.Print("Stop mux")
 		if err := t.mux.Close(); err != nil {
 			errs = append(errs, err)
+			log.Println("err: ", err)
 		}
-	}
-	if t.gatherer != nil {
+	} else if t.gatherer != nil {
 		agent := t.gatherer.agent
 		if agent != nil {
 			agent.OnSelectedCandidatePairChange(nil)
 		}
+		log.Print("Stop gatherer")
 		if err := t.gatherer.Close(); err != nil {
 			errs = append(errs, err)
+			log.Println("err: ", err)
 		}
 	}
 	t.gatherer = nil

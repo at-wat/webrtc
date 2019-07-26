@@ -174,6 +174,7 @@ func (g *ICEGatherer) Gather() error {
 		} else {
 			g.setState(ICEGathererStateComplete)
 			onLocalCandidateHdlr(nil)
+			agent.OnCandidate(nil)
 		}
 	}); err != nil {
 		return err
@@ -194,7 +195,6 @@ func (g *ICEGatherer) Close() error {
 
 	// Break circular reference g->g.agent->g due to OnCandidate callback.
 	err := g.agent.Close()
-	g.agent = nil
 	if err != nil {
 		return err
 	}
