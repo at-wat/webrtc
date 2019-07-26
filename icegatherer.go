@@ -8,7 +8,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/pion/ice"
+	"github.com/at-wat/ice"
 	"github.com/pion/logging"
 )
 
@@ -133,6 +133,7 @@ func (g *ICEGatherer) createAgent() error {
 		return err
 	}
 
+	log.Printf("+++++++ ice.Agent")
 	runtime.SetFinalizer(agent, func(interface{}) {
 		log.Printf("------- ice.Agent finalized")
 	})
@@ -182,6 +183,8 @@ func (g *ICEGatherer) Gather() error {
 
 // Close prunes all local candidates, and closes the ports.
 func (g *ICEGatherer) Close() error {
+	defer g.setState(ICEGathererStateClosed)
+
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -190,16 +193,11 @@ func (g *ICEGatherer) Close() error {
 	}
 
 	// Break circular reference g->g.agent->g due to OnCandidate callback.
-	g.agent.OnCandidate(nil)
-
 	err := g.agent.Close()
+	g.agent = nil
 	if err != nil {
 		return err
 	}
-	g.agent = nil
-
-	//g.loggerFactory = nil
-	//g.log = nil
 
 	return nil
 }
@@ -282,12 +280,14 @@ func (g *ICEGatherer) SignalCandidates() error {
 	g.lock.Unlock()
 
 	if onLocalCandidateHdlr != nil {
-		for i := range candidates {
-			go onLocalCandidateHdlr(&candidates[i])
-		}
-		// Call the handler one last time with nil. This is a signal that candidate
-		// gathering is complete.
-		go onLocalCandidateHdlr(nil)
+		go func() {
+			for i := range candidates {
+				onLocalCandidateHdlr(&candidates[i])
+			}
+			// Call the handler one last time with nil. This is a signal that candidate
+			// gathering is complete.
+			onLocalCandidateHdlr(nil)
+		}()
 	}
 	return nil
 }

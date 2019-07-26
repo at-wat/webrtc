@@ -304,7 +304,9 @@ func (t *DTLSTransport) Stop() error {
 			closeErrs = append(closeErrs, err)
 		}
 	}
+
 	t.onStateChange(DTLSTransportStateClosed)
+	t.iceTransport = nil
 	return util.FlattenErrs(closeErrs)
 }
 

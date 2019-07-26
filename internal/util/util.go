@@ -3,7 +3,9 @@ package util
 import (
 	"fmt"
 	"math/rand"
+	"runtime"
 	"strings"
+	"testing"
 	"time"
 )
 
@@ -33,4 +35,21 @@ func FlattenErrs(errs []error) error {
 	}
 
 	return fmt.Errorf(strings.Join(errstrings, "\n"))
+}
+
+func NewLeakTester(t *testing.T, name string, p interface{}) func() {
+	finalized := false
+	runtime.SetFinalizer(p, func(interface{}) {
+		finalized = true
+	})
+	return func() {
+		for i := 0; i < 5; i++ {
+			runtime.GC()
+			if finalized {
+				return
+			}
+			time.Sleep(time.Second)
+		}
+		t.Errorf("%s: object is not finalized", name)
+	}
 }

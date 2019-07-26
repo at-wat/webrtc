@@ -8,6 +8,8 @@ import (
 	"time"
 
 	"github.com/pion/transport/test"
+
+	"github.com/at-wat/webrtc/v2/internal/util"
 )
 
 // TestPeerConnection_Close is moved to it's own file because the tests
@@ -83,16 +85,10 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 		t.Fatal(err)
 	}
 
-	finalized := false
-	runtime.SetFinalizer(pcAnswer, func(*PeerConnection) {
-		finalized = true
-	})
-	defer func() {
-		runtime.GC()
-		if !finalized {
-			t.Error("PeerConnection is leaked.")
-		}
-	}()
+	leakAnswer := util.NewLeakTester(t, "pcAnswer", pcAnswer)
+	defer leakAnswer()
+	leakOffer := util.NewLeakTester(t, "pcOffer", pcOffer)
+	defer leakOffer()
 
 	answer, err := pcOffer.CreateOffer(nil)
 	if err != nil {
@@ -109,7 +105,7 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 	}
 
 	for {
-		if pcAnswer.iceTransport.State() == ICETransportStateChecking {
+		if pcAnswer.ICEConnectionState() == ICETransportStateChecking {
 			break
 		}
 		time.Sleep(time.Second)
@@ -122,12 +118,12 @@ func TestPeerConnection_Close_PreICE(t *testing.T) {
 
 	// Assert that ICETransport is shutdown, test timeout will prevent deadlock
 	for {
-		if pcAnswer.iceTransport.State() == ICETransportStateClosed {
+		if pcAnswer.ICEConnectionState() == ICETransportStateClosed &&
+			pcOffer.ICEConnectionState() == ICETransportStateClosed {
 			time.Sleep(time.Second * 3)
 			break
 		}
 
 		time.Sleep(time.Second)
 	}
-	time.Sleep(time.Second)
 }

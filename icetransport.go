@@ -9,8 +9,8 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/at-wat/ice"
 	"github.com/at-wat/webrtc/v2/internal/mux"
-	"github.com/pion/ice"
 	"github.com/pion/logging"
 )
 
@@ -89,6 +89,9 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		t.lock.Unlock()
 
 		t.onConnectionStateChange(state)
+		if iceState == ice.ConnectionStateClosed {
+			agent.OnConnectionStateChange(nil)
+		}
 	}); err != nil {
 		return err
 	}
@@ -130,15 +133,14 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		err = errors.New("unknown ICE Role")
 	}
 
-	log.Printf(">>> icetransport new")
 	// Reacquire the lock to set the connection/mux
 	t.lock.Lock()
 	if err != nil {
-		log.Printf(">>> icetransport new err")
 		return err
 	}
 
 	t.conn = iceConn
+	log.Printf("+++++ t.conn")
 	runtime.SetFinalizer(t.conn, func(interface{}) {
 		log.Printf("----- t.conn finalized")
 	})
@@ -149,36 +151,41 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		LoggerFactory: t.loggerFactory,
 	}
 	t.mux = mux.NewMux(config)
+	log.Printf("+++++ t.mux")
 	runtime.SetFinalizer(t.mux, func(interface{}) {
 		log.Printf("----- t.mux finalized")
 	})
-	log.Printf(">>> icetransport.mux")
 
 	return nil
 }
 
 // Stop irreversibly stops the ICETransport.
 func (t *ICETransport) Stop() error {
+	defer func() {
+		t.onConnectionStateChange(ICETransportStateClosed)
+	}()
+
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
 	var errs []error
-	log.Printf("<<< icetransport closing")
 	if t.mux != nil {
-		log.Printf("<<< icetransport.mux closing")
 		if err := t.mux.Close(); err != nil {
 			errs = append(errs, err)
-			t.mux = nil
 		}
-	} else {
-		log.Printf("<<< icetransport.mux is nil")
 	}
 	if t.gatherer != nil {
+		agent := t.gatherer.agent
+		if agent != nil {
+			agent.OnSelectedCandidatePairChange(nil)
+		}
 		if err := t.gatherer.Close(); err != nil {
 			errs = append(errs, err)
-			t.gatherer = nil
 		}
 	}
+	t.gatherer = nil
+	t.conn = nil
+
 	if len(errs) == 0 {
 		return nil
 	}
@@ -221,6 +228,9 @@ func (t *ICETransport) onConnectionStateChange(state ICETransportState) {
 	t.lock.RUnlock()
 	if hdlr != nil {
 		hdlr(state)
+	}
+	if state == ICETransportStateClosed {
+		t.onConnectionStateChangeHdlr = nil
 	}
 }
 
