@@ -1,7 +1,7 @@
 github.com/at-wat/ice v0.5.6-0.20190727020944-42b21aba3bfa h1:+Qse1dCBq0894IsoJ7FQ12NFa8svdOIHQY1oHlV55Co=
 github.com/at-wat/ice v0.5.6-0.20190727020944-42b21aba3bfa/go.mod h1:Qkun5fvOJHw8/eYzM4RNWv9nNkINL1VBS9cEX2eKMJ8=
-github.com/at-wat/srtp v1.2.7-0.20190724145659-155c1f1d8066 h1:mSDXqb0vdmAilAU3z3iIdBMBxVt0sHmSNRhMjOUP1oQ=
-github.com/at-wat/srtp v1.2.7-0.20190724145659-155c1f1d8066/go.mod h1:7vsvFlKuZoKrJ381gpWU7Dl21MG7suLCaD6rk8D7SCo=
+github.com/at-wat/srtp v1.2.7-0.20190731054531-7ece4aa1dd23 h1:XDQb+yviycr0hOm7l6/QLp6461oOz0FWf7BEErTrvQg=
+github.com/at-wat/srtp v1.2.7-0.20190731054531-7ece4aa1dd23/go.mod h1:7vsvFlKuZoKrJ381gpWU7Dl21MG7suLCaD6rk8D7SCo=
 github.com/cheekybits/genny v1.0.0 h1:uGGa4nei+j20rOSeDeP5Of12XVm7TGUd4dJA9RDitfE=
 github.com/cheekybits/genny v1.0.0/go.mod h1:+tQajlRqAUrPI7DOSpB0XAqZYtQakVtB7wXkRAgjxjQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=

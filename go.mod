@@ -4,7 +4,7 @@ go 1.12
 
 require (
 	github.com/at-wat/ice v0.5.6-0.20190727020944-42b21aba3bfa
-	github.com/at-wat/srtp v1.2.7-0.20190724145659-155c1f1d8066
+	github.com/at-wat/srtp v1.2.7-0.20190731054531-7ece4aa1dd23
 	github.com/pion/datachannel v1.4.5
 	github.com/pion/dtls v1.3.5
 	github.com/pion/logging v0.2.2
