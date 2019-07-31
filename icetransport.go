@@ -87,9 +87,6 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		t.lock.Unlock()
 
 		t.onConnectionStateChange(state)
-		if iceState == ice.ConnectionStateClosed {
-			agent.OnConnectionStateChange(nil)
-		}
 	}); err != nil {
 		return err
 	}

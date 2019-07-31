@@ -1,5 +1,5 @@
-github.com/at-wat/ice v0.5.6-0.20190727020944-42b21aba3bfa h1:+Qse1dCBq0894IsoJ7FQ12NFa8svdOIHQY1oHlV55Co=
-github.com/at-wat/ice v0.5.6-0.20190727020944-42b21aba3bfa/go.mod h1:Qkun5fvOJHw8/eYzM4RNWv9nNkINL1VBS9cEX2eKMJ8=
+github.com/at-wat/ice v0.5.6-0.20190731071700-cb4c35143037 h1:TDObK6epNS+8PxgjEQK8ceVqUpwCsTGQ6dLcSDvHa4Y=
+github.com/at-wat/ice v0.5.6-0.20190731071700-cb4c35143037/go.mod h1:Qkun5fvOJHw8/eYzM4RNWv9nNkINL1VBS9cEX2eKMJ8=
 github.com/at-wat/srtp v1.2.7-0.20190731054531-7ece4aa1dd23 h1:XDQb+yviycr0hOm7l6/QLp6461oOz0FWf7BEErTrvQg=
 github.com/at-wat/srtp v1.2.7-0.20190731054531-7ece4aa1dd23/go.mod h1:7vsvFlKuZoKrJ381gpWU7Dl21MG7suLCaD6rk8D7SCo=
 github.com/cheekybits/genny v1.0.0 h1:uGGa4nei+j20rOSeDeP5Of12XVm7TGUd4dJA9RDitfE=

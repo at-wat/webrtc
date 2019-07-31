@@ -518,8 +518,6 @@ func (pc *PeerConnection) createICETransport() *ICETransport {
 			cs = ICEConnectionStateDisconnected
 		case ICETransportStateClosed:
 			cs = ICEConnectionStateClosed
-			// Unregister callback to break circular reference
-			t.OnConnectionStateChange(nil)
 		default:
 			pc.log.Warnf("OnConnectionStateChange: unhandled ICE state: %s", state)
 			return

@@ -167,7 +167,6 @@ func (g *ICEGatherer) Gather() error {
 		} else {
 			g.setState(ICEGathererStateComplete)
 			onLocalCandidateHdlr(nil)
-			agent.OnCandidate(nil)
 		}
 	}); err != nil {
 		return err
