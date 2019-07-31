@@ -5,8 +5,6 @@ package webrtc
 import (
 	"context"
 	"errors"
-	"log"
-	"runtime"
 	"sync"
 
 	"github.com/at-wat/ice"
@@ -140,10 +138,6 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 	}
 
 	t.conn = iceConn
-	log.Printf("+++++ t.conn")
-	runtime.SetFinalizer(t.conn, func(interface{}) {
-		log.Printf("----- t.conn finalized")
-	})
 
 	config := mux.Config{
 		Conn:          t.conn,
@@ -151,10 +145,6 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 		LoggerFactory: t.loggerFactory,
 	}
 	t.mux = mux.NewMux(config)
-	log.Printf("+++++ t.mux")
-	runtime.SetFinalizer(t.mux, func(interface{}) {
-		log.Printf("----- t.mux finalized")
-	})
 
 	return nil
 }
@@ -170,20 +160,16 @@ func (t *ICETransport) Stop() error {
 
 	var errs []error
 	if t.mux != nil {
-		log.Print("Stop mux")
 		if err := t.mux.Close(); err != nil {
 			errs = append(errs, err)
-			log.Println("err: ", err)
 		}
 	} else if t.gatherer != nil {
 		agent := t.gatherer.agent
 		if agent != nil {
 			agent.OnSelectedCandidatePairChange(nil)
 		}
-		log.Print("Stop gatherer")
 		if err := t.gatherer.Close(); err != nil {
 			errs = append(errs, err)
-			log.Println("err: ", err)
 		}
 	}
 	t.gatherer = nil

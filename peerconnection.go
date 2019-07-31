@@ -8,10 +8,8 @@ import (
 	"crypto/elliptic"
 	"crypto/rand"
 	"fmt"
-	"log"
 	mathRand "math/rand"
 	"regexp"
-	"runtime"
 	"strconv"
 	"strings"
 	"sync"
@@ -118,10 +116,6 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	if err != nil {
 		return nil, err
 	}
-	log.Printf("+++++++ pc.iceGatherer")
-	runtime.SetFinalizer(pc.iceGatherer, func(interface{}) {
-		log.Printf("------- pc.iceGatherer finalized")
-	})
 
 	if !pc.iceGatherer.agentIsTrickle {
 		if err = pc.iceGatherer.Gather(); err != nil {
@@ -132,10 +126,6 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	// Create the ice transport
 	iceTransport := pc.createICETransport()
 	pc.iceTransport = iceTransport
-	log.Printf("+++++++ pc.iceTransport")
-	runtime.SetFinalizer(pc.iceTransport, func(interface{}) {
-		log.Printf("------- pc.iceTransport finalized") // currently leaked
-	})
 
 	// Create the DTLS transport
 	dtlsTransport, err := pc.api.NewDTLSTransport(pc.iceTransport, pc.configuration.Certificates)
@@ -143,10 +133,6 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 		return nil, err
 	}
 	pc.dtlsTransport = dtlsTransport
-	log.Printf("+++++++ pc.dtlsTransport")
-	runtime.SetFinalizer(pc.dtlsTransport, func(interface{}) {
-		log.Printf("------- pc.dtlsTransport finalized")
-	})
 
 	return pc, nil
 }
@@ -932,10 +918,6 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error {
 	// Create the SCTP transport
 	sctp := pc.api.NewSCTPTransport(pc.dtlsTransport)
 	pc.sctpTransport = sctp
-	log.Printf("+++++++ pc.sctpTransport")
-	runtime.SetFinalizer(pc.sctpTransport, func(interface{}) {
-		log.Printf("------- pc.sctpTransport finalized")
-	})
 
 	// Wire up the on datachannel handler
 	sctp.OnDataChannel(func(d *DataChannel) {
@@ -1201,11 +1183,7 @@ func (pc *PeerConnection) openSRTP() {
 // to distribute orphaned RTCP messages. This is needed to make sure we don't block
 // and provides useful debugging messages
 func (pc *PeerConnection) drainSRTP() {
-	log.Printf("========== drainSRTP")
-	defer log.Printf("========== /drainSRTP")
 	go func() {
-		log.Printf("========== drainSRTP routine")
-		defer log.Printf("========== /drainSRTP routine")
 		for {
 			srtpSession, err := pc.dtlsTransport.getSRTPSession()
 			if err != nil {

@@ -3,8 +3,6 @@
 package webrtc
 
 import (
-	"log"
-	"runtime"
 	"sync"
 	"time"
 
@@ -132,11 +130,6 @@ func (g *ICEGatherer) createAgent() error {
 	if err != nil {
 		return err
 	}
-
-	log.Printf("+++++++ ice.Agent")
-	runtime.SetFinalizer(agent, func(interface{}) {
-		log.Printf("------- ice.Agent finalized")
-	})
 
 	g.agent = agent
 	if !g.agentIsTrickle {
