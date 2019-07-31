@@ -287,6 +287,9 @@ func (pc *PeerConnection) OnICEConnectionStateChange(f func(ICEConnectionState))
 func (pc *PeerConnection) onICEConnectionStateChange(cs ICEConnectionState) (done chan struct{}) {
 	pc.mu.RLock()
 	hdlr := pc.onICEConnectionStateChangeHandler
+	if cs == ICEConnectionStateClosed {
+		pc.onICEConnectionStateChangeHandler = nil
+	}
 	pc.mu.RUnlock()
 
 	pc.log.Infof("ICE connection state changed: %s", cs)
