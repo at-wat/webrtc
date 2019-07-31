@@ -176,6 +176,8 @@ func (g *ICEGatherer) Gather() error {
 
 // Close prunes all local candidates, and closes the ports.
 func (g *ICEGatherer) Close() error {
+	defer g.setState(ICEGathererStateClosed)
+
 	g.lock.Lock()
 	defer g.lock.Unlock()
 
@@ -183,11 +185,11 @@ func (g *ICEGatherer) Close() error {
 		return nil
 	}
 
+	// Clear circular reference g->g.agent->g due to OnCandidate callback.
 	err := g.agent.Close()
 	if err != nil {
 		return err
 	}
-	g.agent = nil
 
 	return nil
 }

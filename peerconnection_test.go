@@ -10,6 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/pion/logging"
+	"github.com/pion/webrtc/v2/internal/util"
 	"github.com/pion/webrtc/v2/pkg/rtcerr"
 )
 
@@ -362,6 +363,11 @@ func TestPeerConnection_EventHandlers(t *testing.T) {
 	pcAnswer, err := NewPeerConnection(Configuration{})
 	assert.NoError(t, err)
 
+	leakAnswer := util.NewLeakTester(t, "pcAnswer", pcAnswer)
+	defer leakAnswer()
+	leakOffer := util.NewLeakTester(t, "pcOffer", pcOffer)
+	defer leakOffer()
+
 	// wasCalled is a list of event handlers that were called.
 	wasCalled := []string{}
 	wasCalledMut := &sync.Mutex{}
@@ -427,6 +433,18 @@ func TestPeerConnection_EventHandlers(t *testing.T) {
 		break
 	case <-timeout:
 		t.Fatalf("timed out waiting for one or more events handlers to be called (these *were* called: %+v)", wasCalled)
+	}
+	pcAnswer.Close()
+	pcOffer.Close()
+
+	for {
+		if pcAnswer.ICEConnectionState() == ICETransportStateClosed &&
+			pcOffer.ICEConnectionState() == ICETransportStateClosed {
+			time.Sleep(time.Second * 3)
+			break
+		}
+
+		time.Sleep(time.Second)
 	}
 }
 

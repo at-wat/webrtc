@@ -112,7 +112,6 @@ func (api *API) NewPeerConnection(configuration Configuration) (*PeerConnection,
 	if err = pc.initConfiguration(configuration); err != nil {
 		return nil, err
 	}
-
 	pc.iceGatherer, err = pc.createICEGatherer()
 	if err != nil {
 		return nil, err
@@ -288,6 +287,9 @@ func (pc *PeerConnection) OnICEConnectionStateChange(f func(ICEConnectionState))
 func (pc *PeerConnection) onICEConnectionStateChange(cs ICEConnectionState) (done chan struct{}) {
 	pc.mu.RLock()
 	hdlr := pc.onICEConnectionStateChangeHandler
+	if cs == ICEConnectionStateClosed {
+		pc.onICEConnectionStateChangeHandler = nil
+	}
 	pc.mu.RUnlock()
 
 	pc.log.Infof("ICE connection state changed: %s", cs)
@@ -937,6 +939,7 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error {
 		pc.mu.RUnlock()
 	})
 
+	iceGatherer := pc.iceGatherer
 	go func() {
 		// Star the networking in a new routine since it will block until
 		// the connection is actually established.
@@ -947,7 +950,7 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error {
 			iceRole = ICERoleControlling
 		}
 		err := pc.iceTransport.Start(
-			pc.iceGatherer,
+			iceGatherer,
 			ICEParameters{
 				UsernameFragment: remoteUfrag,
 				Password:         remotePwd,
@@ -1568,6 +1571,12 @@ func (pc *PeerConnection) Close() error {
 			closeErrs = append(closeErrs, err)
 		}
 	}
+
+	// A func registered to pc.sctpTransport.OnDataChannel have reference to pc.
+	// Clear them to break circular reference.
+	pc.sctpTransport = nil
+	pc.iceGatherer = nil
+
 	return util.FlattenErrs(closeErrs)
 }
 

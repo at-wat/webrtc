@@ -6,6 +6,7 @@ import (
 
 	"github.com/pion/logging"
 	"github.com/pion/transport/packetio"
+	"github.com/pion/webrtc/v2/internal/util"
 )
 
 // The maximum amount of data that can be buffered before returning errors.
@@ -73,26 +74,25 @@ func (m *Mux) RemoveEndpoint(e *Endpoint) {
 
 // Close closes the Mux and all associated Endpoints.
 func (m *Mux) Close() error {
+	var errs []error
 	m.lock.Lock()
 	for e := range m.endpoints {
-		err := e.close()
-		if err != nil {
-			return err
+		if err := e.close(); err != nil {
+			errs = append(errs, err)
 		}
 
 		delete(m.endpoints, e)
 	}
 	m.lock.Unlock()
 
-	err := m.nextConn.Close()
-	if err != nil {
-		return err
+	if err := m.nextConn.Close(); err != nil {
+		errs = append(errs, err)
+	} else {
+		// Wait for readLoop to end
+		<-m.closedCh
 	}
 
-	// Wait for readLoop to end
-	<-m.closedCh
-
-	return nil
+	return util.FlattenErrs(errs)
 }
 
 func (m *Mux) readLoop() {

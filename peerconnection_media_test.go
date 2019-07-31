@@ -566,8 +566,8 @@ func TestPeerConnection_Media_Closed(t *testing.T) {
 		t.Fatal("Write to Track with no RTPSenders did not return io.ErrClosedPipe")
 	}
 
-	if err = pcAnswer.WriteRTCP([]rtcp.Packet{&rtcp.RapidResynchronizationRequest{SenderSSRC: 0, MediaSSRC: 0}}); err != io.ErrClosedPipe {
-		t.Fatal("WriteRTCP to closed PeerConnection did not return io.ErrClosedPipe")
+	if err = pcAnswer.WriteRTCP([]rtcp.Packet{&rtcp.RapidResynchronizationRequest{SenderSSRC: 0, MediaSSRC: 0}}); err == nil {
+		t.Fatal("WriteRTCP to closed PeerConnection did not return error")
 	}
 
 	err = pcOffer.Close()

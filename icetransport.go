@@ -10,6 +10,7 @@ import (
 	"github.com/pion/ice"
 	"github.com/pion/logging"
 	"github.com/pion/webrtc/v2/internal/mux"
+	"github.com/pion/webrtc/v2/internal/util"
 )
 
 // ICETransport allows an application access to information about the ICE
@@ -148,15 +149,31 @@ func (t *ICETransport) Start(gatherer *ICEGatherer, params ICEParameters, role *
 
 // Stop irreversibly stops the ICETransport.
 func (t *ICETransport) Stop() error {
+	defer func() {
+		t.onConnectionStateChange(ICETransportStateClosed)
+	}()
+
 	t.lock.Lock()
 	defer t.lock.Unlock()
 
+	var errs []error
 	if t.mux != nil {
-		return t.mux.Close()
+		if err := t.mux.Close(); err != nil {
+			errs = append(errs, err)
+		}
 	} else if t.gatherer != nil {
-		return t.gatherer.Close()
+		agent := t.gatherer.agent
+		if agent != nil {
+			agent.OnSelectedCandidatePairChange(nil)
+		}
+		if err := t.gatherer.Close(); err != nil {
+			errs = append(errs, err)
+		}
 	}
-	return nil
+	t.gatherer = nil
+	t.conn = nil
+
+	return util.FlattenErrs(errs)
 }
 
 // OnSelectedCandidatePairChange sets a handler that is invoked when a new
@@ -190,6 +207,9 @@ func (t *ICETransport) onConnectionStateChange(state ICETransportState) {
 	t.lock.RUnlock()
 	if hdlr != nil {
 		hdlr(state)
+	}
+	if state == ICETransportStateClosed {
+		t.onConnectionStateChangeHdlr = nil
 	}
 }
 
