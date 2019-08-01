@@ -3,7 +3,7 @@ module github.com/at-wat/webrtc/v2
 go 1.12
 
 require (
-	github.com/at-wat/ice v0.5.6-0.20190801062154-bbc383230e8a
+	github.com/at-wat/ice v0.5.6-0.20190801075522-155014ef4e3c
 	github.com/pion/datachannel v1.4.5
 	github.com/pion/dtls v1.5.0
 	github.com/pion/logging v0.2.2
@@ -14,5 +14,6 @@ require (
 	github.com/pion/sdp/v2 v2.3.0
 	github.com/pion/srtp v1.2.6
 	github.com/pion/transport v0.8.6
+	github.com/pion/webrtc/v2 v2.1.0
 	github.com/stretchr/testify v1.3.0
 )
