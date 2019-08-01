@@ -1,3 +1,5 @@
+github.com/at-wat/ice v0.5.6-0.20190801062154-bbc383230e8a h1:3G6NvP4aGmn0DJfr9SDxEzGA6jjoQvpO2ePQ06WxgiE=
+github.com/at-wat/ice v0.5.6-0.20190801062154-bbc383230e8a/go.mod h1:Qkun5fvOJHw8/eYzM4RNWv9nNkINL1VBS9cEX2eKMJ8=
 github.com/cheekybits/genny v1.0.0 h1:uGGa4nei+j20rOSeDeP5Of12XVm7TGUd4dJA9RDitfE=
 github.com/cheekybits/genny v1.0.0/go.mod h1:+tQajlRqAUrPI7DOSpB0XAqZYtQakVtB7wXkRAgjxjQ=
 github.com/davecgh/go-spew v1.1.0/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
@@ -24,8 +26,6 @@ github.com/pion/datachannel v1.4.5 h1:paz18kYAetpTdK8tlMAtDY+Ayxrv5fndZ5XPZwiZHr
 github.com/pion/datachannel v1.4.5/go.mod h1:SpMJbuu8v+qbA94m6lWQwSdCf8JKQvgmdSHDNtcbe+w=
 github.com/pion/dtls v1.5.0 h1:GtN3DJ0Fv5wC/Y04uOXT1zPeGA4C3HrsP1aAKsIBiU8=
 github.com/pion/dtls v1.5.0/go.mod h1:CjlPLfQdsTg3G4AEXjJp8FY5bRweBlxHrgoFrN+fQsk=
-github.com/pion/ice v0.5.5 h1:1S16+2EkN1aaH9uC4mp6HUqpbKg8Y69GbTybLGu9GcI=
-github.com/pion/ice v0.5.5/go.mod h1:FSTDLP+ian3PtxRjervtyDP2AOqt2c6cvfebZ7dwLnI=
 github.com/pion/logging v0.2.1/go.mod h1:k0/tDVsRCX2Mb2ZEmTqNa7CWsQPc+YYCB7Q+5pahoms=
 github.com/pion/logging v0.2.2 h1:M9+AIj/+pxNsDfAT64+MAVgJO0rsyLnoJKCqf//DoeY=
 github.com/pion/logging v0.2.2/go.mod h1:k0/tDVsRCX2Mb2ZEmTqNa7CWsQPc+YYCB7Q+5pahoms=
