@@ -19,8 +19,8 @@ import (
 	"github.com/pion/rtcp"
 	"github.com/pion/sdp/v2"
 
-	"github.com/pion/webrtc/v2/internal/util"
-	"github.com/pion/webrtc/v2/pkg/rtcerr"
+	"github.com/at-wat/webrtc/v2/internal/util"
+	"github.com/at-wat/webrtc/v2/pkg/rtcerr"
 )
 
 // PeerConnection represents a WebRTC connection that establishes a
@@ -854,8 +854,8 @@ func (pc *PeerConnection) LocalDescription() *SessionDescription {
 }
 
 // SetRemoteDescription sets the SessionDescription of the remote peer
-func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error { //nolint pion/webrtc#614
-	if pc.currentRemoteDescription != nil { // pion/webrtc#207
+func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error { //nolint at-wat/webrtc#614
+	if pc.currentRemoteDescription != nil { // at-wat/webrtc#207
 		return fmt.Errorf("remoteDescription is already defined, SetRemoteDescription can only be called once")
 	}
 	if pc.isClosed {
@@ -961,7 +961,7 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error { 
 		)
 
 		if err != nil {
-			// pion/webrtc#614
+			// at-wat/webrtc#614
 			pc.log.Warnf("Failed to start manager: %s", err)
 			return
 		}
@@ -972,7 +972,7 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error { 
 			Fingerprints: []DTLSFingerprint{{Algorithm: fingerprintHash, Value: fingerprint}},
 		})
 		if err != nil {
-			// pion/webrtc#614
+			// at-wat/webrtc#614
 			pc.log.Warnf("Failed to start manager: %s", err)
 			return
 		}
@@ -1002,7 +1002,7 @@ func (pc *PeerConnection) SetRemoteDescription(desc SessionDescription) error { 
 			MaxMessageSize: 0,
 		})
 		if err != nil {
-			// pion/webrtc#614
+			// at-wat/webrtc#614
 			pc.log.Warnf("Failed to start SCTP: %s", err)
 			return
 		}
@@ -1460,7 +1460,7 @@ func (pc *PeerConnection) CreateDataChannel(label string, options *DataChannelIn
 		return nil, &rtcerr.InvalidStateError{Err: ErrConnectionClosed}
 	}
 
-	// pion/webrtc#748
+	// at-wat/webrtc#748
 	params := &DataChannelParameters{
 		Label:   label,
 		Ordered: true,
@@ -1500,7 +1500,7 @@ func (pc *PeerConnection) CreateDataChannel(label string, options *DataChannelIn
 		}
 	}
 
-	// pion/webrtc#748
+	// at-wat/webrtc#748
 	d, err := pc.api.newDataChannel(params, pc.log)
 	if err != nil {
 		pc.mu.Unlock()
@@ -1638,7 +1638,7 @@ func (pc *PeerConnection) iceStateChange(newState ICEConnectionState) {
 }
 
 func (pc *PeerConnection) addFingerprint(d *sdp.SessionDescription) error {
-	// pion/webrtc#753
+	// at-wat/webrtc#753
 	fingerprints, err := pc.configuration.Certificates[0].GetFingerprints()
 	if err != nil {
 		return err
@@ -1656,7 +1656,7 @@ func (pc *PeerConnection) addTransceiverSDP(d *sdp.SessionDescription, midValue 
 	// Use the first transceiver to generate the section attributes
 	t := transceivers[0]
 	media := sdp.NewJSEPMediaDescription(t.kind.String(), []string{}).
-		WithValueAttribute(sdp.AttrKeyConnectionSetup, dtlsRole.String()). // pion/webrtc#494
+		WithValueAttribute(sdp.AttrKeyConnectionSetup, dtlsRole.String()). // at-wat/webrtc#494
 		WithValueAttribute(sdp.AttrKeyMID, midValue).
 		WithICECredentials(iceParams.UsernameFragment, iceParams.Password).
 		WithPropertyAttribute(sdp.AttrKeyRTCPMux).
@@ -1718,7 +1718,7 @@ func (pc *PeerConnection) addDataMediaSection(d *sdp.SessionDescription, midValu
 			},
 		},
 	}).
-		WithValueAttribute(sdp.AttrKeyConnectionSetup, dtlsRole.String()). // pion/webrtc#494
+		WithValueAttribute(sdp.AttrKeyConnectionSetup, dtlsRole.String()). // at-wat/webrtc#494
 		WithValueAttribute(sdp.AttrKeyMID, midValue).
 		WithPropertyAttribute(RTPTransceiverDirectionSendrecv.String()).
 		WithPropertyAttribute("sctpmap:5000 webrtc-datachannel 1024").
